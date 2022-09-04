@@ -6,6 +6,9 @@ import xlsxwriter
 import streamlit as st
 from PIL import Image
 import pandas as pd
+import matplotlib.pyplot as plt
+# import seaborn as se
+import numpy as np
 
 st.set_page_config(
     page_title="Document Processing App",
@@ -32,11 +35,11 @@ with st.sidebar:
     st.image(img, width=300)
 
     # Text/Title
-    st.write("🏛 Home")
-    st.write("📰 About US")
-    st.write("🧰 Services")
-    st.write("📞✉ Contacts")
-    st.write("🔒 Logout")
+    st.write("Home")
+    st.write("About")
+    st.write("Services")
+    st.write("Contacts")
+    st.write("Logout")
 
 
 # save uploaded file
@@ -165,6 +168,7 @@ def extract_insert_to_xlsx_file():
 
             # saving a file
             excelsheet.save('Invoice_Information.xlsx')
+
         except:
             st.write("Process failed")
             print('\n')
@@ -173,10 +177,8 @@ def extract_insert_to_xlsx_file():
 def read_from_excel():
     # read by default 1st sheet of an excel file
     dataframe1 = pd.read_excel('Invoice_Information.xlsx')
+    dataframe1.dropna(axis=0, how='any', inplace=True)
     st.table(dataframe1)
-    st.line_chart(dataframe1)
-    st.area_chart(dataframe1)
-    st.bar_chart(dataframe1)
 
 
 # adding a button
@@ -186,8 +188,10 @@ if st.button('Process'):
     read_from_excel()
 
     # video
-    video_file = open("Analytics.mp4", "rb").read()
-    st.video(video_file)
+    # video_file = open("Analytics.mp4", "rb").read()
+    # st.video(video_file)
 
 else:
     st.write("Click Process Button")
+
+

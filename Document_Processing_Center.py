@@ -6,15 +6,9 @@ import xlsxwriter
 import streamlit as st
 from PIL import Image
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 # import seaborn as se
 import numpy as np
-
-st.set_page_config(
-    page_title="Document Processing App",
-    page_icon="🌏",
-    layout="wide"
-)
 
 st.markdown(
     """
@@ -36,7 +30,7 @@ with st.sidebar:
 
     # Text/Title
     st.write("Home")
-    st.write("About")
+    st.write("About US")
     st.write("Services")
     st.write("Contacts")
     st.write("Logout")
@@ -99,7 +93,7 @@ def extract_insert_to_xlsx_file():
                 total1 = total[len(total) - 1]
                 # st.write(total1)
             else:
-                total1 = " "
+                total1 = ""
 
             # Finding the array of Invoice dates and storing them in variables
             invoice_date = re.findall(
@@ -124,7 +118,7 @@ def extract_insert_to_xlsx_file():
                     date = match2[0]
                     # st.write(date)
                 # else:
-                #     date = " "
+                #     date = ""
 
             # Finding the array of emails and storing them in variables
             email = re.findall(r'([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)', page_content)
@@ -134,8 +128,8 @@ def extract_insert_to_xlsx_file():
                 # st.write(email1)
                 # st.write(company_name)
             else:
-                email1 = " "
-                company_name = " "
+                email1 = ""
+                company_name = ""
 
             # Finding the array of Invoice Numbers and storing them in variables
 
@@ -145,7 +139,7 @@ def extract_insert_to_xlsx_file():
                 invoice_no1 = invoice_no[len(invoice_no) - 1]
                 print(invoice_no1)
             else:
-                invoice_no1 = " "
+                invoice_no1 = ""
 
             # Finding the array of company names and storing them in variables
             # company_name = re.findall(r'\b[A-Z]\w+(?:\.com?)?(?:[ -]+(?:&[ -]+)?[A-Z]\w+(?:\.com?)?){0,2}[,\s]+(?i:ltd|llc|inc|plc|co(?:rp)?|group|holding|gmbh)\b', page_content)
@@ -177,7 +171,7 @@ def extract_insert_to_xlsx_file():
 def read_from_excel():
     # read by default 1st sheet of an excel file
     dataframe1 = pd.read_excel('Invoice_Information.xlsx')
-    dataframe1.dropna(axis=0, how='any', inplace=True)
+    # df = dataframe1.dropna()
     st.table(dataframe1)
 
 

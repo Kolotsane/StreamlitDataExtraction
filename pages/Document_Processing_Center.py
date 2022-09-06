@@ -171,8 +171,8 @@ def extract_insert_to_xlsx_file():
 def read_from_excel():
     # read by default 1st sheet of an excel file
     dataframe1 = pd.read_excel('Invoice_Information.xlsx')
-    # df = dataframe1.dropna()
-    st.table(dataframe1)
+    df = dataframe1.dropna()
+    st.table(df)
 
 
 # adding a button

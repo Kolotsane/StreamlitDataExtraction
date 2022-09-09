@@ -9,31 +9,79 @@ import pandas as pd
 # import matplotlib.pyplot as plt
 # import seaborn as se
 import numpy as np
+import base64
+from streamlit_option_menu import option_menu
 
-st.markdown(
-    """
-    <style>
-    .Document_Processing_App{
-    background: blue
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
+
+@st.cache(allow_output_mutation=True)
+def get_base64_of_bin_file(png_file):
+    with open(png_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+
+def build_markup_for_logo(
+        png_file,
+        background_position="50% 10%",
+        margin_top="10%",
+        image_width="100%",
+        image_height="",
+):
+    binary_string = get_base64_of_bin_file(png_file)
+    return """
+            <style>
+                [data-testid="stSidebarNav"] {
+                    background-image: url("data:image/png;base64,%s");
+                    background-repeat: no-repeat;
+                    background-position: %s;
+                    margin-top: %s;
+                    background-size: %s %s;
+                }
+            </style>
+            """ % (
+        binary_string,
+        background_position,
+        margin_top,
+        image_width,
+        image_height,
+    )
+
+
+def add_logo(png_file):
+    logo_markup = build_markup_for_logo(png_file)
+    st.markdown(
+        logo_markup,
+        unsafe_allow_html=True,
+    )
+
+
+add_logo("lg.png")
+
+
+# with st.sidebar:
+#     # images
+#     img = Image.open("logo.png")
+#     st.image(img, width=300)
+#     # Text/Title
+#     st.write("""
+#     <style>
+#     @import url('https://fonts.googleapis.com/css2?family=Fascinate');
+#     html, body, [class*="css"]  {
+#    font-family: 'Verdana', cursive;
+#    background: white;
+#     }
+#     </style>
+#     """, unsafe_allow_html=True)
+
+
+selected = option_menu(
+    menu_title=None,
+    options=["Home", "About Us", "Services", "Contact Us", "Logout"],
+    icons=["house", "book", "gear", "envelope", "key"],
+    menu_icon="cast",
+    default_index=0,
+    orientation="horizontal"
 )
-
-with st.sidebar:
-    # images
-    img = Image.open("logo.png")
-    st.image(img, width=300)
-
-    # Text/Title
-    st.write("Home")
-    st.write("About US")
-    st.write("Services")
-    st.write("Contacts")
-    st.write("Logout")
 
 
 # save uploaded file
@@ -170,9 +218,14 @@ def extract_insert_to_xlsx_file():
 
 def read_from_excel():
     # read by default 1st sheet of an excel file
-    dataframe1 = pd.read_excel('Invoice_Information.xlsx')
-    df = dataframe1.dropna()
-    st.table(df)
+    df = pd.read_excel('Invoice_Information.xlsx')
+    with st.expander("View Unclean Data"):
+        st.table(df)
+        df.dropna(inplace=True)
+        df["Total"] = df["Total"].str.replace("$", "", regex=False).astype(float)
+        df['Date'] = pd.to_datetime(df['Date'])
+    with st.expander("View Clean Data"):
+        st.table(df)
 
 
 # adding a button
@@ -187,5 +240,3 @@ if st.button('Process'):
 
 else:
     st.write("Click Process Button")
-
-

@@ -219,13 +219,15 @@ def extract_insert_to_xlsx_file():
 def read_from_excel():
     # read by default 1st sheet of an excel file
     df = pd.read_excel('Invoice_Information.xlsx')
-    with st.expander("View Unclean Data"):
+    with st.expander("Raw Data"):
         st.table(df)
         df.dropna(inplace=True)
         df["Total"] = df["Total"].str.replace("$", "", regex=False).astype(float)
         df['Date'] = pd.to_datetime(df['Date'])
-    with st.expander("View Clean Data"):
+    with st.expander("Clean Data"):
         st.table(df)
+    df.to_csv('Clean_Data.csv', index=False)
+    df.to_excel('Clean_Data.xlsx', index=False)
 
 
 # adding a button

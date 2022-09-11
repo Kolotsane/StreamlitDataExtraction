@@ -269,36 +269,36 @@ with c3:
         ).properties(width=550)
 
     st.altair_chart(chart)
-    pie_chart1 = px.pie(df4,names='processed_docs')
-    st.markdown('### Accurate Documents Overview')
-    plost.donut_chart(
-    data=df4,
-    theta='accurate_docs',
-    color='#5DADE2')
-    #st.plotly_chart(pie_chart1)
-    #st.dataframe(df4)
-    fig, ax = plt.subplots(figsize=(5, 1))
-
-    ax.pie([all_documents,accurately_processed],
-           wedgeprops={'width':0.3},
-           startangle=90,
-           colors=['#515A5A', '#5DADE2'])
-    plt.show()
-    st.pyplot(fig)
+    # pie_chart1 = px.pie(df4,names='processed_docs')
+    # st.markdown('### Accurate Documents Overview')
+    # plost.donut_chart(
+    # data=df4,
+    # theta='accurate_docs',
+    # color='#5DADE2')
+    # #st.plotly_chart(pie_chart1)
+    # #st.dataframe(df4)
+    # fig, ax = plt.subplots(figsize=(5, 1))
+    #
+    # ax.pie([all_documents,accurately_processed],
+    #        wedgeprops={'width':0.3},
+    #        startangle=90,
+    #        colors=['#515A5A', '#5DADE2'])
+    # plt.show()
+    # st.pyplot(fig)
 with c4:
     st.line_chart(df4[['processed_docs','accurate_docs','inaccurate_docs']])
-    st.markdown('### Inaccurate Documents Overview')
-    plost.donut_chart(
-    data=df4,
-    theta='inaccurate_docs',
-    color='#008631')
-    fig, ax = plt.subplots(figsize=(5, 1))
-
-    ax.pie([all_documents,inaccurately_processed],
-           wedgeprops={'width':0.3},
-           startangle=90,
-           colors=['#008631', '#515A5A'])
-    plt.show()
-    st.pyplot(fig)
+    # st.markdown('### Inaccurate Documents Overview')
+    # plost.donut_chart(
+    # data=df4,
+    # theta='inaccurate_docs',
+    # color='#008631')
+    # fig, ax = plt.subplots(figsize=(5, 1))
+    #
+    # ax.pie([all_documents,inaccurately_processed],
+    #        wedgeprops={'width':0.3},
+    #        startangle=90,
+    #        colors=['#008631', '#515A5A'])
+    # plt.show()
+    # st.pyplot(fig)
 
 

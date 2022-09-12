@@ -126,9 +126,9 @@ def doc_table():
         accurately_processed = int(len(df1.index))
         inaccurately_processed = all_documents - accurately_processed
         col1, col2, col3 = st.columns(3)
-        col1.metric("All Processed Documents", all_documents,"100%")
-        col2.metric("Accurately processed documents", accurately_processed,str(round(float(accurately_processed/all_documents * 100),1)) + "%")
-        col3.metric("Inaccurately processed documents", inaccurately_processed,str(round(float(inaccurately_processed/all_documents *100),1)) +"%")
+        col1.metric("Overall Documents", all_documents,"100%")
+        col2.metric("Accurately Processed Documents", accurately_processed,str(round(float(accurately_processed/all_documents * 100),1)) + "%")
+        col3.metric("Inaccurately Processed Documents", inaccurately_processed,str(round(float(inaccurately_processed/all_documents *100),1)) +"%")
         #st.dataframe(df1)
 
 def pie_chart():
@@ -197,11 +197,11 @@ def line_chart_plot():
     # read by default 1st sheet of an excel file
     df1 = pd.read_excel('Invoice_Information.xlsx')
     all_documents = int(len(df1.index))
-    st.write("All processed documents  =" + str(all_documents))
+    st.write("Overall Documents  =" + str(all_documents))
     accurately_processed = int(len(df1.index))
-    st.write("Accurately processed documents  =" + str(accurately_processed))
+    st.write("Accurately Processed Documents  =" + str(accurately_processed))
     inaccurately_processed = all_documents - accurately_processed
-    st.write("Inaccurately processed documents  =" + str(inaccurately_processed))
+    st.write("Inaccurately Processed Documents  =" + str(inaccurately_processed))
     st.pyplot(plot_pie([all_documents, accurately_processed, inaccurately_processed]))
 
 
@@ -253,17 +253,17 @@ with c3:
     df1['Date'] = pd.to_datetime(df1['Date'])
     accurately_processed = int(len(df1.index))
     inaccurately_processed = all_documents - accurately_processed
-    df2=df1.assign(processed_docs = [all_documents,0,0,0,0,0,0])
-    df3=df2.assign(accurate_docs=[accurately_processed,0,0,0,0,0,0])
-    df4=df3.assign(inaccurate_docs=[inaccurately_processed,0,0,0,0,0,0])
+    df2=df1.assign(Overall=[all_documents,0,0,0,0,0,0])
+    df3=df2.assign(Accurate=[accurately_processed,0,0,0,0,0,0])
+    df4=df3.assign(Inaccurate=[inaccurately_processed,0,0,0,0,0,0])
     data = pd.DataFrame({
-    'Documents':['orange', 'blue', 'red'],
-    'Number': [all_documents, accurately_processed, inaccurately_processed],
-    'colors':  ['All Processed', 'Accurately Processed', 'Inaccurately Processed']
+    'Documents':['Overall', 'Accurate', 'Inaccurate'],
+    'Number of Processed Documents': [all_documents, accurately_processed, inaccurately_processed],
+    'colors':  ['blue', 'orange', 'red']
         })
     chart = alt.Chart(data).mark_bar().encode(
     x='Documents',
-    y='Number',
+    y='Number of Processed Documents',
     color='colors'
 
         ).properties(width=550)
@@ -286,7 +286,7 @@ with c3:
     # plt.show()
     # st.pyplot(fig)
 with c4:
-    st.line_chart(df4[['processed_docs','accurate_docs','inaccurate_docs']])
+    st.line_chart(df4[['Overall','Accurate','Inaccurate']])
     # st.markdown('### Inaccurate Documents Overview')
     # plost.donut_chart(
     # data=df4,

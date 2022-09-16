@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import base64
 from streamlit_option_menu import option_menu
+from datetime import date as dt
 
 
 @st.cache(allow_output_mutation=True)
@@ -114,6 +115,7 @@ def create_xlsx_file():
     worksheet.write('C1', 'Email')
     worksheet.write('D1', 'Date')
     worksheet.write('E1', 'Total')
+    worksheet.write('F1', 'Processed Date')
 
     workbook.close()
 
@@ -126,14 +128,15 @@ def extract_insert_to_xlsx_file():
     # Extracting data from the multiple pdf files
     for file_name in os.listdir('invoices'):
         # st.write(file_name)
-        load_pdf = open(r'C:\\Users\\KOLOTSANE\\PycharmProjects\\DataExtraction\\invoices\\' + file_name, 'rb')
+
+        load_pdf = open(r'C:\\Users\\KOLOTSANE\\PycharmProjects\\streamlit\\invoices\\' + file_name, 'rb')
         read_pdf = PyPDF2.PdfFileReader(load_pdf, strict=False)
         page_count = read_pdf.getNumPages()
         first_page = read_pdf.getPage(0)
         page_content = first_page.extractText()
 
         try:
-
+            dtoday = dt.today().strftime('%Y-%m-%d')
             # print(page_content)
             # Finding the array of totals and storing them in variables
             total = re.findall(r'(?<!\S)(?:(?:cad|[$]|usd|R|M|P) ?[\d,.]+|[\d.,]+(?:cad|[$]|usd))(?!\S)', page_content)
@@ -207,6 +210,7 @@ def extract_insert_to_xlsx_file():
             sheet.cell(column=3, row=last_row_number + 1).value = email1
             sheet.cell(column=4, row=last_row_number + 1).value = date
             sheet.cell(column=5, row=last_row_number + 1).value = total1
+            sheet.cell(column=6, row=last_row_number + 1).value = dtoday
 
             # saving a file
             excelsheet.save('Invoice_Information.xlsx')

@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 import plost
 import altair as alt
 import base64
+from datetime import date, datetime
 
 st.set_page_config(
     page_title="Dashboard",
@@ -126,7 +127,7 @@ def doc_table():
         accurately_processed = int(len(df1.index))
         inaccurately_processed = all_documents - accurately_processed
         col1, col2, col3 = st.columns(3)
-        col1.metric("Overall Documents", all_documents,"100%")
+        col1.metric("All Processed Documents", all_documents,"100%")
         col2.metric("Accurately Processed Documents", accurately_processed,str(round(float(accurately_processed/all_documents * 100),1)) + "%")
         col3.metric("Inaccurately Processed Documents", inaccurately_processed,str(round(float(inaccurately_processed/all_documents *100),1)) +"%")
         #st.dataframe(df1)
@@ -197,11 +198,11 @@ def line_chart_plot():
     # read by default 1st sheet of an excel file
     df1 = pd.read_excel('Invoice_Information.xlsx')
     all_documents = int(len(df1.index))
-    st.write("Overall Documents  =" + str(all_documents))
+    st.write("All processed documents  =" + str(all_documents))
     accurately_processed = int(len(df1.index))
-    st.write("Accurately Processed Documents  =" + str(accurately_processed))
+    st.write("Accurately processed documents  =" + str(accurately_processed))
     inaccurately_processed = all_documents - accurately_processed
-    st.write("Inaccurately Processed Documents  =" + str(inaccurately_processed))
+    st.write("Inaccurately processed documents  =" + str(inaccurately_processed))
     st.pyplot(plot_pie([all_documents, accurately_processed, inaccurately_processed]))
 
 
@@ -241,7 +242,75 @@ doc_table()
 
 #image_function()
 
+def graph_refiner(df4, x="date", y="documents"):
+    # Create a selection that chooses the nearest point & selects based on x-value
+    hover = alt.selection_single(
+        fields=[x],
+        nearest=True,
+        on="mouseover",
+        empty="none",
+    )
 
+    lines = (
+        alt.Chart(df4)
+        .mark_line(point="transparent")
+        .encode(x=x, y=y)
+        .transform_calculate(color='datum.delta < 0 ? "red" : "green"')
+    )
+
+    # Draw points on the line, highlight based on selection, color based on delta
+    points = (
+        lines.transform_filter(hover)
+        .mark_circle(size=65)
+        .encode(color=alt.Color("color:N", scale=None))
+    )
+
+    # Draw an invisible rule at the location of the selection
+    tooltips = (
+        alt.Chart()
+        .mark_rule(opacity=0)
+        .encode(
+            x=x,
+            y=y,
+            tooltip=[x, y, alt.Tooltip("delta", format=".2%")],
+        )
+        .add_selection(hover)
+    )
+
+    return (lines + points + tooltips).interactive()
+
+col4, col5 = st.columns(2)
+
+with col4:
+    df1 = pd.read_excel('Invoice_Information.xlsx')
+    all_documents = len(df1)
+
+    start = st.date_input(
+        "Select start date",
+        date(2022, 1, 1),
+        # min_value=date.strptime("2022-01-01", "%Y-%m-%d"),
+        # max_value=date.now(),
+        )
+    nodays = len(df1[df1["Processed Date"] == str(start)])
+
+    fig, ax = plt.subplots(figsize=(2, 1))
+
+    ax.pie([all_documents,  nodays],
+           wedgeprops={'width':0.3},
+           startangle=90,
+           colors=['white', '#90e0ef'])
+
+    plt.show()
+    # st.pyplot(fig)
+with col5:
+    time_frame = st.selectbox(
+            "Select daily, weekly or monthly documents", ("daily","weekly", "monthly")
+        )
+st.header("Documents Overview")
+
+#st.altair_chart(
+        #graph_refiner(), use_container_width=True
+  #  )
 #ANOTHER MODIFICATION
 excel_file= 'Invoice_Information.xlsx'
 df1=pd.read_excel(excel_file)
@@ -253,52 +322,52 @@ with c3:
     df1['Date'] = pd.to_datetime(df1['Date'])
     accurately_processed = int(len(df1.index))
     inaccurately_processed = all_documents - accurately_processed
-    df2=df1.assign(Overall=[all_documents,0,0,0,0,0,0])
-    df3=df2.assign(Accurate=[accurately_processed,0,0,0,0,0,0])
-    df4=df3.assign(Inaccurate=[inaccurately_processed,0,0,0,0,0,0])
+    df2=df1.assign(Overall=[all_documents,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    df3=df2.assign(Accurate=[accurately_processed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    df4=df3.assign(Inaccurate=[inaccurately_processed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
     data = pd.DataFrame({
-    'Documents':['Overall', 'Accurate', 'Inaccurate'],
-    'Number of Processed Documents': [all_documents, accurately_processed, inaccurately_processed],
-    'colors':  ['blue', 'orange', 'red']
+    'Documents':['orange', 'blue', 'red'],
+    'Number': [all_documents, accurately_processed, inaccurately_processed],
+    'colors':  ['All Processed', 'Accurately Processed', 'Inaccurately Processed']
         })
     chart = alt.Chart(data).mark_bar().encode(
     x='Documents',
-    y='Number of Processed Documents',
+    y='Number',
     color='colors'
 
         ).properties(width=550)
 
     st.altair_chart(chart)
-    # pie_chart1 = px.pie(df4,names='processed_docs')
-    # st.markdown('### Accurate Documents Overview')
-    # plost.donut_chart(
-    # data=df4,
-    # theta='accurate_docs',
-    # color='#5DADE2')
-    # #st.plotly_chart(pie_chart1)
-    # #st.dataframe(df4)
-    # fig, ax = plt.subplots(figsize=(5, 1))
-    #
-    # ax.pie([all_documents,accurately_processed],
-    #        wedgeprops={'width':0.3},
-    #        startangle=90,
-    #        colors=['#515A5A', '#5DADE2'])
-    # plt.show()
-    # st.pyplot(fig)
+    # pie_chart1 = px.pie(df4, names='processed_docs')
+    #st.markdown('### Accurate Documents Overview')
+    #plost.donut_chart(
+    #data=df4,
+    #theta='accurate_docs',
+    #color='#5DADE2')
+    #st.plotly_chart(pie_chart1)
+    #st.dataframe(df4)
+    #fig, ax = plt.subplots(figsize=(5, 1))
+
+    #ax.pie([all_documents,accurately_processed],
+           #wedgeprops={'width':0.3},
+           #startangle=90,
+           #colors=['#515A5A', '#5DADE2'])
+    #plt.show()
+    #st.pyplot(fig)
 with c4:
-    st.line_chart(df4[['Overall','Accurate','Inaccurate']])
-    # st.markdown('### Inaccurate Documents Overview')
-    # plost.donut_chart(
-    # data=df4,
-    # theta='inaccurate_docs',
-    # color='#008631')
-    # fig, ax = plt.subplots(figsize=(5, 1))
-    #
-    # ax.pie([all_documents,inaccurately_processed],
-    #        wedgeprops={'width':0.3},
-    #        startangle=90,
-    #        colors=['#008631', '#515A5A'])
-    # plt.show()
-    # st.pyplot(fig)
+    st.line_chart(df4[['Overall', 'Accurate', 'Inaccurate']])
+    #st.markdown('### Inaccurate Documents Overview')
+    #plost.donut_chart(
+    #data=df4,
+    ##theta='inaccurate_docs',
+    #color='#008631')
+    #fig, ax = plt.subplots(figsize=(5, 1))
+
+    #ax.pie([all_documents,inaccurately_processed],
+          # wedgeprops={'width':0.3},
+          # startangle=90,
+          # colors=['#008631', '#515A5A'])
+    #plt.show()
+    #st.pyplot(fig)
 
 
